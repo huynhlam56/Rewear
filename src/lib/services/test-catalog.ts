@@ -45,18 +45,26 @@ function flattenSuite(suite: PlaywrightListSuite, describeTitle: string, out: Ca
 }
 
 export async function listAvailableTests(): Promise<CatalogTest[]> {
-  const { stdout } = await execFileAsync(PLAYWRIGHT_BIN, ["test", "--list", "--reporter=json"], {
-    cwd: process.cwd(),
-    maxBuffer: 1024 * 1024 * 20,
-  });
+  try {
+    const { stdout } = await execFileAsync(PLAYWRIGHT_BIN, ["test", "--list", "--reporter=json"], {
+      cwd: process.cwd(),
+      maxBuffer: 1024 * 1024 * 20,
+    });
 
-  const report = JSON.parse(stdout) as { suites?: PlaywrightListSuite[] };
-  const tests: CatalogTest[] = [];
-  for (const suite of report.suites ?? []) {
-    flattenSuite(suite, suite.title, tests);
+    const report = JSON.parse(stdout) as { suites?: PlaywrightListSuite[] };
+    const tests: CatalogTest[] = [];
+    for (const suite of report.suites ?? []) {
+      flattenSuite(suite, suite.title, tests);
+    }
+
+    return tests.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
+  } catch {
+    // Serverless environments (e.g. Vercel) don't ship node_modules/.bin, so the
+    // Playwright CLI can't be spawned there. Fall back to the catalog snapshotted
+    // at build time by scripts/generate-test-catalog.mjs.
+    const catalog = (await import("@/generated/test-catalog.json")).default;
+    return catalog as CatalogTest[];
   }
-
-  return tests.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 }
 
 export function toPlaywrightSelector(testId: string): string {
