@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { adminLogoutAction } from "@/app/actions/admin";
 import { QahuynhLogo } from "@/components/qahuynh-logo";
 
 export const metadata: Metadata = {
   title: "qahuynh - test dashboard",
 };
 
-export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
-  const authenticated = await isAdminAuthenticated();
-
+export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
       <div
@@ -28,13 +24,6 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               <span className="block text-xs leading-none text-neutral-500 mt-1">test dashboard</span>
             </span>
           </Link>
-          {authenticated ? (
-            <form action={adminLogoutAction}>
-              <button type="submit" className="text-sm font-medium text-neutral-400 hover:text-white" data-testid="admin-logout">
-                Log out
-              </button>
-            </form>
-          ) : null}
         </div>
       </header>
       <main className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6">{children}</main>

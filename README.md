@@ -16,7 +16,7 @@ The app has two halves:
 ## Getting started
 
 ```bash
-cp .env.example .env   # fill in DATABASE_URL, TEST_INGEST_TOKEN, ADMIN_PASSWORD
+cp .env.example .env   # fill in DATABASE_URL, TEST_INGEST_TOKEN
 npm install
 npx prisma migrate dev # create the database schema
 npm run dev

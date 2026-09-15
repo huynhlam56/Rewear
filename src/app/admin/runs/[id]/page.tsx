@@ -1,13 +1,8 @@
-import { notFound, redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { notFound } from "next/navigation";
 import { getTestRunById } from "@/lib/services/test-runs";
 import { StatusBadge } from "@/components/status-badge";
 
 export default async function TestRunDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
-  }
-
   const { id } = await params;
   const run = await getTestRunById(id);
 

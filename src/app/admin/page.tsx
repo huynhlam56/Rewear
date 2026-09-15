@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { listTestRuns } from "@/lib/services/test-runs";
 import { listAvailableTests } from "@/lib/services/test-catalog";
 import { triggerTestRunAction } from "@/app/actions/admin";
@@ -11,10 +9,6 @@ export default async function AdminDashboardPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
-  }
-
   const [runs, tests, { error }] = await Promise.all([listTestRuns(), listAvailableTests(), searchParams]);
 
   const testsByFile = new Map<string, typeof tests>();
